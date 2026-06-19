@@ -2,36 +2,59 @@ package quarkus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import io.quarkus.runtime.Application;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/temperaturas")
 public class TemperaturaResource {
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    private TemperaturaService temperaturas;
 
-    public List<Temperatura> list(){
-        return Arrays.asList(
-            new Temperatura("Bogotá", 28, 15),
-            new Temperatura("Neiva", 40, 20),
-            new Temperatura("Medellín", 15, 28)
-        );
-
+    @Inject
+    public TemperaturaResource(TemperaturaService temperaturas) {
+        this.temperaturas = temperaturas;
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Temperatura agregar(Temperatura temp){
+        temperaturas.addTemperatura(temp);
+        return temp;
+    }
 
     @GET
-    @Path("/una")
     @Produces(MediaType.APPLICATION_JSON)
-    public Temperatura medicion(){
-        return new Temperatura("Bogotá", 15, 28); 
+    public List<Temperatura> list(){
+        return temperaturas.obtenerTemperaturas();
+    }
+
+    @GET
+    @Path("/maximo")
+    public Response maxima(){
+        if(temperaturas.IsEmpty()){
+            return Response.status(404).entity("No hay temperaturas registradas").build();
+        } else {
+            int temperaturaMax = temperaturas.maxima();
+            return Response.ok().entity(temperaturaMax).build();
+        }
+    }
+
+    @GET
+    @Path("/{ciudad}")
+    public Temperatura temperaturaCiudad(@PathParam("ciudad") String ciudad){
+        return temperaturas.sacarTemperatura(ciudad)
+        .get();
+
     }
     
-
 }

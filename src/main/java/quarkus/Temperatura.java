@@ -75,10 +75,4 @@ public class Temperatura {
         return "Temperatura [ciudad=" + ciudad + ", maximo=" + maximo + ", minimo=" + minimo + "]";
     }
 
-    
-
-    
-
-    
-
 }
