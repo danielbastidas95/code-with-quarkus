@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import io.vertx.core.impl.NoStackTraceException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -51,10 +53,10 @@ public class TemperaturaResource {
 
     @GET
     @Path("/{ciudad}")
-    public Temperatura temperaturaCiudad(@PathParam("ciudad") String ciudad){
-        return temperaturas.sacarTemperatura(ciudad)
-        .get();
 
+    public Temperatura temperaturaCiudad(@PathParam("ciudad") String ciudad){
+        return temperaturas.sacarTemperatura(ciudad).orElseThrow(() -> 
+        new NoSuchElementException("no hay registros para: " + ciudad));
     }
     
 }
